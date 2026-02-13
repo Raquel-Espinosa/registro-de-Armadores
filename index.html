@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Registro de Productividad</title>
+    <!-- Tailwind CSS para diseño moderno y responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Fuente Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        /* Eliminar flechas de inputs numéricos */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        /* El overlay ahora se controla con inline styles para evitar conflictos */
+        .loading-overlay {
+            background: rgba(0,0,0,0.5);
+            z-index: 50;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- Contenedor Principal -->
+    <div class="w-full max-w-md glass-effect shadow-xl rounded-2xl overflow-hidden border border-gray-100">
+        
+        <!-- Cabecera -->
+        <div class="bg-blue-600 p-6 text-white text-center">
+            <h1 class="text-2xl font-bold mb-1"><i class="fa-solid fa-clipboard-check mr-2"></i>Productividad</h1>
+            <p class="text-blue-100 text-sm">Registro de Armadores</p>
+        </div>
+
+        <!-- Formulario -->
+        <form id="submit-to-google-sheet" class="p-6 space-y-4">
+            
+            <!-- Grid de 2 columnas para campos cortos -->
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Número de Empleado -->
+                <div class="col-span-1">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="num_empleado">
+                        # Empleado
+                    </label>
+                    <input class="w-full bg-gray-50 text-gray-800 border border-gray-300 rounded-lg py-3 px-4 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" 
+                           id="num_empleado" name="num_empleado" type="number" placeholder="Ej: 123456" 
+                           required max="999999" oninput="if(this.value.length > 6) this.value = this.value.slice(0, 6);">
+                </div>
+
+                <!-- Tienda -->
+                <div class="col-span-1">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="tienda">
+                        Tienda (4 dig)
+                    </label>
+                    <input class="w-full bg-gray-50 text-gray-800 border border-gray-300 rounded-lg py-3 px-4 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" 
+                           id="tienda" name="tienda" type="number" placeholder="Ej: 1010" 
+                           required max="9999" oninput="if(this.value.length > 4) this.value = this.value.slice(0, 4);">
+                </div>
+            </div>
+
+            <!-- Grupo -->
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="grupo">
+                    Grupo
+                </label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                        <i class="fa-solid fa-users"></i>
+                    </span>
+                    <input class="w-full bg-gray-50 pl-10 text-gray-800 border border-gray-300 rounded-lg py-3 px-4 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" 
+                           id="grupo" name="grupo" type="number" placeholder="Número de grupo" required>
+                </div>
+            </div>
+
+            <div class="h-px bg-gray-200 my-4"></div>
+            
+            <!-- Sección de Métricas -->
+            <div class="space-y-4">
+                <!-- Conteo -->
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="conteo">
+                        Conteo Realizado
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fa-solid fa-calculator"></i>
+                        </span>
+                        <input class="w-full bg-gray-50 pl-10 text-gray-800 border border-gray-300 rounded-lg py-3 px-4 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" 
+                               id="conteo" name="conteo" type="number" placeholder="0" required>
+                    </div>
+                </div>
+
+                <!-- Piezas Tarima -->
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="piezas_tarima">
+                        Piezas de la Tarima
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fa-solid fa-layer-group"></i>
+                        </span>
+                        <input class="w-full bg-gray-50 pl-10 text-gray-800 border border-gray-300 rounded-lg py-3 px-4 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" 
+                               id="piezas_tarima" name="piezas_tarima" type="number" placeholder="0" required>
+                    </div>
+                </div>
+
+                <!-- Número de Entregas -->
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="num_entregas">
+                        Número de Entregas
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fa-solid fa-truck-ramp-box"></i>
+                        </span>
+                        <input class="w-full bg-gray-50 pl-10 text-gray-800 border border-gray-300 rounded-lg py-3 px-4 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" 
+                               id="num_entregas" name="num_entregas" type="number" placeholder="0" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón Enviar -->
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-xl shadow-lg transform transition hover:-translate-y-0.5 mt-6 flex justify-center items-center gap-2">
+                <i class="fa-solid fa-paper-plane"></i> Registrar Datos
+            </button>
+
+            <!-- Mensaje de estado -->
+            <div id="status-message" class="text-center text-sm font-medium mt-2 hidden"></div>
+
+        </form>
+        
+        <div class="bg-gray-50 px-6 py-3 text-center border-t border-gray-100">
+            <p class="text-xs text-gray-400">Sistema de Control Interno v1.0</p>
+        </div>
+    </div>
+
+    <!-- Loading Overlay CORREGIDO: Se agregó style="display: none;" explícito -->
+    <div id="loading" class="loading-overlay fixed inset-0 flex items-center justify-center" style="display: none;">
+        <div class="bg-white p-6 rounded-lg shadow-xl text-center border border-gray-200">
+            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto mb-3"></div>
+            <p class="text-gray-700 font-semibold">Guardando registro...</p>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURACIÓN OBLIGATORIA
+        // ==========================================
+        // 1. Ve a tu Google Sheet -> Extensiones -> Apps Script
+        // 2. Publicar -> Nueva Implementación -> Copia la URL
+        // 3. PEGA ESA URL AQUÍ ABAJO (dentro de las comillas):
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyC7L9_dQsT9ocu7APkb3sBoSRfW3dn2S_HbOeWGKfqEXtSgrpwMVr1l75i8qbCpyi8/exec'; 
+        // ==========================================
+
+        const form = document.forms['submit-to-google-sheet'];
+        const loading = document.getElementById('loading');
+        const statusMsg = document.getElementById('status-message');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            
+            // 1. Validar si el usuario pegó la URL
+            if(scriptURL.includes('PEGAR_TU_URL') || scriptURL.length < 20) {
+                alert("⚠️ ERROR DE CONFIGURACIÓN ⚠️\n\nNo has puesto el enlace de tu Google Script.\n\nPor favor:\n1. Abre este archivo (index.html) en tu editor.\n2. Busca la línea 137.\n3. Pega la URL que te dio Google.");
+                return;
+            }
+
+            // Mostrar Loading usando flex
+            loading.style.display = 'flex';
+            statusMsg.classList.add('hidden');
+
+            const fetchPromise = fetch(scriptURL, { method: 'POST', body: new FormData(form), mode: 'no-cors'});
+            
+            // Promesa de timeout (4 segundos)
+            const timeoutPromise = new Promise((resolve) => {
+                setTimeout(() => resolve('timeout'), 4000); 
+            });
+
+            Promise.race([fetchPromise, timeoutPromise])
+                .then(response => {
+                    // Ocultar Loading
+                    loading.style.display = 'none';
+                    
+                    if (response === 'timeout') {
+                        console.log("La petición tardó un poco, pero seguimos.");
+                    }
+
+                    statusMsg.textContent = "✅ ¡Registro enviado!";
+                    statusMsg.className = "text-center text-sm font-medium mt-2 text-green-600";
+                    statusMsg.classList.remove('hidden');
+                    
+                    form.reset();
+                    
+                    setTimeout(() => {
+                        statusMsg.classList.add('hidden');
+                    }, 5000);
+                })
+                .catch(error => {
+                    console.error('Error!', error.message);
+                    loading.style.display = 'none';
+                    statusMsg.textContent = "⚠️ Posible error de conexión. Verifica si se guardó.";
+                    statusMsg.className = "text-center text-sm font-medium mt-2 text-orange-600";
+                    statusMsg.classList.remove('hidden');
+                });
+        });
+    </script>
+</body>
+</html>
