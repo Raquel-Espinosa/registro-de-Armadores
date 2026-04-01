@@ -58,11 +58,11 @@
                 <!-- Tienda -->
                 <div class="col-span-1">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="tienda">
-                        Tienda (4 dig)
+                        Tienda (7101-7900)
                     </label>
                     <input class="w-full bg-gray-50 text-gray-800 border border-gray-300 rounded-lg py-3 px-4 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" 
-                           id="tienda" name="tienda" type="number" placeholder="Ej: 1010" 
-                           required max="9999" oninput="if(this.value.length > 4) this.value = this.value.slice(0, 4);">
+                           id="tienda" name="tienda" type="number" placeholder="Ej: 7150" 
+                           required min="7101" max="7900" oninput="if(this.value.length > 4) this.value = this.value.slice(0, 4);">
                 </div>
             </div>
 
@@ -164,8 +164,25 @@
         const loading = document.getElementById('loading');
         const statusMsg = document.getElementById('status-message');
 
+        // Cargar el número de empleado guardado al iniciar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            const empleadoGuardado = localStorage.getItem('num_empleado_guardado');
+            if(empleadoGuardado) {
+                document.getElementById('num_empleado').value = empleadoGuardado;
+            }
+        });
+
         form.addEventListener('submit', e => {
             e.preventDefault();
+            
+            // Validación del rango de la tienda
+            const tiendaInput = document.getElementById('tienda');
+            const tiendaValor = parseInt(tiendaInput.value, 10);
+            if (tiendaValor < 7101 || tiendaValor > 7900) {
+                alert("Error: El número de tienda debe estar entre 7101 y 7900.");
+                tiendaInput.focus();
+                return; // Detiene el envío
+            }
             
             // 1. Validar si el usuario pegó la URL
             if(scriptURL.includes('PEGAR_TU_URL') || scriptURL.length < 20) {
@@ -197,7 +214,14 @@
                     statusMsg.className = "text-center text-sm font-medium mt-2 text-green-600";
                     statusMsg.classList.remove('hidden');
                     
+                    // Guardar el número de empleado actual
+                    const numEmpleadoActual = document.getElementById('num_empleado').value;
+                    localStorage.setItem('num_empleado_guardado', numEmpleadoActual);
+                    
                     form.reset();
+                    
+                    // Restaurar el número de empleado para que quede fijo
+                    document.getElementById('num_empleado').value = numEmpleadoActual;
                     
                     setTimeout(() => {
                         statusMsg.classList.add('hidden');
